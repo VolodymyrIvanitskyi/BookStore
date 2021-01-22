@@ -58,7 +58,7 @@ namespace BookStore.Web.Controllers
             cart.TotalPrice = order.TotalPrice;
             HttpContext.Session.Set(cart);
         }
-        public IActionResult AddItem(int bookId, int count)
+        public IActionResult AddItem(int bookId, int count = 1 )
         {
             (Order order, Cart cart) = GetOrCreateOrderAndCart();
 
@@ -68,7 +68,7 @@ namespace BookStore.Web.Controllers
 
             SaveOrderAndCart(order, cart);
 
-            return RedirectToAction("Index", "Book", new { bookId });
+            return RedirectToAction("Index", "Book", new {id = bookId });
 
         }
         [HttpPost]
@@ -79,7 +79,7 @@ namespace BookStore.Web.Controllers
             order.GetItem(bookId).Count = count;
             SaveOrderAndCart(order, cart);
 
-            return RedirectToAction("Index", "Book", new { bookId });
+            return RedirectToAction("Index", "Book", new {bookId});
         }
 
         private (Order order, Cart cart) GetOrCreateOrderAndCart()
@@ -107,7 +107,7 @@ namespace BookStore.Web.Controllers
             order.RemoveItem(id);
             SaveOrderAndCart(order, cart);
 
-            return RedirectToAction("Index", "Book", new { id });
+            return RedirectToAction("Index", "Book", new {id });
         }
     }
 }
