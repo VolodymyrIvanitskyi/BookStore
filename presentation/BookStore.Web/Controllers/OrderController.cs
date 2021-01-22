@@ -49,13 +49,44 @@ namespace BookStore.Web.Controllers
                 TotalPrice = order.TotalPrice
             };
         }
-        public IActionResult AddItem(int id)
+
+        private void SaveOrderAndCart(Order order, Cart cart)
         {
+            orderRepository.Update(order);
 
+            cart.TotalCount = order.TotalCount;
+            cart.TotalPrice = order.TotalPrice;
+            HttpContext.Session.Set(cart);
+        }
+        public IActionResult AddItem(int bookId, int count)
+        {
+            (Order order, Cart cart) = GetOrCreateOrderAndCart();
+
+            var book = bookRepository.GetById(bookId);
+
+            order.AddorUpdateItem(book, count);
+
+            SaveOrderAndCart(order, cart);
+
+            return RedirectToAction("Index", "Book", new { bookId });
+
+        }
+        [HttpPost]
+        public IActionResult UpdateItem(int bookId, int count)
+        {
+            (Order order, Cart cart) = GetOrCreateOrderAndCart();
+
+            order.GetItem(bookId).Count = count;
+            SaveOrderAndCart(order, cart);
+
+            return RedirectToAction("Index", "Book", new { bookId });
+        }
+
+        private (Order order, Cart cart) GetOrCreateOrderAndCart()
+        {
             Order order;
-            Cart cart;
 
-            if (HttpContext.Session.TryGetCart(out cart))
+            if (HttpContext.Session.TryGetCart(out Cart cart))
             {
                 //Якщо в сесії є запис про корзину
                 order = orderRepository.GetById(cart.OrderId);
@@ -66,16 +97,17 @@ namespace BookStore.Web.Controllers
                 order = orderRepository.Create();
                 cart = new Cart(order.Id);
             }
+            return (order, cart);
+        }
 
-            var book = bookRepository.GetById(id);
-            order.AddItem(book, 1);
-            orderRepository.Update(order);
+        public IActionResult RemoveItem(int id)
+        {
+            (Order order, Cart cart) = GetOrCreateOrderAndCart();
 
-            cart.TotalCount = order.TotalCount;
-            cart.TotalPrice = order.TotalPrice;
-            HttpContext.Session.Set(cart);
+            order.RemoveItem(id);
+            SaveOrderAndCart(order, cart);
 
-            return RedirectToAction("Index", "Book",new { id});
+            return RedirectToAction("Index", "Book", new { id });
         }
     }
 }
