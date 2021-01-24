@@ -1,6 +1,10 @@
-﻿using BookStore.Web.Models;
+﻿using BookStore.Messages;
+using BookStore.Web.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace BookStore.Web.Controllers
 {
@@ -8,13 +12,18 @@ namespace BookStore.Web.Controllers
     {
         private readonly IBookRepository bookRepository;
         private readonly IOrderRepository orderRepository;
+        private readonly INotificationService notificationService;
 
-        public OrderController(IBookRepository bookRepository, IOrderRepository orderRepository)
+        public OrderController(IBookRepository bookRepository,
+                                IOrderRepository orderRepository,
+                                INotificationService notificationService)
         {
             this.bookRepository = bookRepository;
             this.orderRepository = orderRepository;
+            this.notificationService = notificationService;
         }
 
+        [HttpGet] 
         public IActionResult Index()
         {
             if (HttpContext.Session.TryGetCart(out Cart cart))
@@ -35,7 +44,7 @@ namespace BookStore.Web.Controllers
                              join book in books on item.BookId equals book.Id
                              select new OrderItemModel
                              {
-                                 BookId = book.Id, 
+                                 BookId = book.Id,
                                  Title = book.Title,
                                  Author = book.Author,
                                  Price = item.Price,
@@ -58,7 +67,8 @@ namespace BookStore.Web.Controllers
             cart.TotalPrice = order.TotalPrice;
             HttpContext.Session.Set(cart);
         }
-        public IActionResult AddItem(int bookId, int count = 1 )
+        [HttpPost]
+        public IActionResult AddItem(int bookId, int count = 1)
         {
             (Order order, Cart cart) = GetOrCreateOrderAndCart();
 
@@ -68,7 +78,7 @@ namespace BookStore.Web.Controllers
 
             SaveOrderAndCart(order, cart);
 
-            return RedirectToAction("Index", "Book", new {id = bookId });
+            return RedirectToAction("Index", "Book", new { id = bookId });
 
         }
         [HttpPost]
@@ -100,6 +110,7 @@ namespace BookStore.Web.Controllers
             return (order, cart);
         }
 
+        [HttpPost]
         public IActionResult RemoveItem(int bookId)
         {
             (Order order, Cart cart) = GetOrCreateOrderAndCart();
@@ -108,6 +119,72 @@ namespace BookStore.Web.Controllers
             SaveOrderAndCart(order, cart);
 
             return RedirectToAction("Index", "Order");
+        }
+
+        [HttpPost]
+        public IActionResult SendConfirmationCode(int id, string cellPhone)
+        {
+            var order = orderRepository.GetById(id);
+            var model = Map(order);
+
+            if (IsValidateCellPhone(cellPhone))
+            {
+                model.Errors["cellPhone"] = "Невірний номер телефону";
+                return View("Index", model);
+            }
+
+            int code = 1111; //Random.Next(1000,10000)
+            HttpContext.Session.SetInt32(cellPhone, code);
+            notificationService.SendConfirmationCode(cellPhone, code);
+
+            return View("Confirmation",
+                new ConfirmationModel
+                {
+                    OrderId = id,
+                    CellPhone = cellPhone
+                }) ;
+        }
+        private bool IsValidateCellPhone(string cellPhone)
+        {
+            if (cellPhone == null)
+                return false;
+            cellPhone = cellPhone.Replace(" ", "").Replace("-", "");
+            return Regex.IsMatch(cellPhone, @"^\+?\d{11}$");
+        }
+
+        [HttpPost]
+        public IActionResult StartDelivery(int id, string cellPhone, int code)
+        {
+            int? storedCode = HttpContext.Session.GetInt32(cellPhone);
+            if (storedCode == null)
+            {
+                return View("Confirmation",
+                new ConfirmationModel
+                {
+                    OrderId = id,
+                    CellPhone = cellPhone,
+                    Errors = new Dictionary<string, string>
+                    {
+                        { "code", "Пустий код, повторіть відправлення" }
+                    }
+                }) ;
+            }
+
+            if (storedCode != code)
+            {
+                return View("Confirmation",
+                new ConfirmationModel
+                {
+                    OrderId = id,
+                    CellPhone = cellPhone,
+                    Errors = new Dictionary<string, string>
+                    {
+                        { "code", "Невірний код" }
+                    }
+                });
+            }
+
+            return View();
         }
     }
 }

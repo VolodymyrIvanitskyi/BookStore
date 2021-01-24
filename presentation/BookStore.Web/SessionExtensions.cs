@@ -8,6 +8,14 @@ namespace BookStore.Web
     public static class SessionExtensions
     {
         private const string key = "Cart";
+
+        /*public static int? GetInt32(string cellPhone)
+        {
+            return null;
+        }
+        public static void SetInt32(string cellPhone, int code)
+        {
+        }*/
         public static void Set(this ISession session, Cart value)
         {
             if(value  == null)
