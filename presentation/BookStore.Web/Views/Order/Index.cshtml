@@ -45,18 +45,18 @@
 
 <p>
     Для оформлення замовлення необхідно підтвердити номер вашого мобільного.
-    Введіть номер і нітисніть <em>Відправити код</em>. На ваш номер буде відправлено *код підтвердження*.
+    Введіть номер і нітисніть <em>Відправити код</em>. На ваш номер буде відправлено <b>код підтвердження</b>.
 </p>
 
 <form action="@Url.Action("SendConfirmationCode")" method="post">
     <input type="hidden" name="id" value="@Model.Id" />
     <div class="form-group">
         <label for="cellPhone">Мобильный телефон</label>
-        <input type="text" class="form-control" name="cellPhone" placeholder="+79876543210" value="+79876543210" />
+        <input type="text" class="form-control" name="cellPhone" placeholder="+380987654321" value="+380987654321" />
         @if (Model.Errors.ContainsKey("cellPhone"))
         {
             <small class="form-text text-danger">@Model.Errors["cellPhone"]</small>
         }
     </div>
-    <button type="submit" class="btn btn-success">Отправить код</button>
+    <button type="submit" class="btn btn-success">Відправити код</button>
 </form>

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BookStore.Contractors;
 using BookStore.Memory;
 using BookStore.Messages;
 using Microsoft.AspNetCore.Builder;
@@ -36,6 +37,7 @@ namespace BookStore.Web
             services.AddSingleton<IBookRepository, BookRepository>();
             services.AddSingleton<IOrderRepository, OrderRepository>();
             services.AddSingleton<INotificationService, DebugNotificationService>();
+            services.AddSingleton<IDeliveryService, PostomateDeliveryService>();
             services.AddSingleton<BookService>();
         }
 
