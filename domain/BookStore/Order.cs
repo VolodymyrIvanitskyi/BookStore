@@ -11,6 +11,7 @@ namespace BookStore
 
         private List<OrderItem> items;
 
+        public string cellPhone { get; set; }
         public IReadOnlyCollection<OrderItem> Items
         {
             get { return items; }
