@@ -5,12 +5,14 @@ using System.Threading.Tasks;
 using BookStore.Contractors;
 using BookStore.Memory;
 using BookStore.Messages;
+using BookStore.Web.Contractors;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Store.YandexKassa;
 
 namespace BookStore.Web
 {
@@ -39,6 +41,8 @@ namespace BookStore.Web
             services.AddSingleton<INotificationService, DebugNotificationService>();
             services.AddSingleton<IDeliveryService, PostomateDeliveryService>();
             services.AddSingleton<IPaymentService, CashPaymentService>();
+            services.AddSingleton<IPaymentService, YandexKassaPaymentService>();
+            services.AddSingleton<IWebContractorService, YandexKassaPaymentService>();
             services.AddSingleton<BookService>();
         }
 
@@ -69,6 +73,10 @@ namespace BookStore.Web
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapAreaControllerRoute(
+                    name: "yandex.kassa",
+                    areaName: "YandexKassa",
+                    pattern: "YandexKassa/{controller=Home}/{action=Index}/{id?}");
             });
         }
     }

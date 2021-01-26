@@ -1,5 +1,6 @@
 ﻿using BookStore.Contractors;
 using BookStore.Messages;
+using BookStore.Web.Contractors;
 using BookStore.Web.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,18 +17,21 @@ namespace BookStore.Web.Controllers
         private readonly IOrderRepository orderRepository;
         private readonly IEnumerable<IDeliveryService> deliveryServices;
         private readonly INotificationService notificationService;
+        private readonly IEnumerable<IWebContractorService> webContractorServices;
         private readonly IEnumerable<IPaymentService> paymentServices;
 
         public OrderController(IBookRepository bookRepository,
                                 IOrderRepository orderRepository,
                                 IEnumerable<IDeliveryService> deliveryServices,
                                 INotificationService notificationService,
+                                IEnumerable<IWebContractorService> webContractorServices,
                                 IEnumerable<IPaymentService> paymentServices)
         {
             this.bookRepository = bookRepository;
             this.orderRepository = orderRepository;
             this.deliveryServices = deliveryServices;
             this.notificationService = notificationService;
+            this.webContractorServices = webContractorServices;
             this.paymentServices = paymentServices;
         }
 
@@ -255,6 +259,11 @@ namespace BookStore.Web.Controllers
 
             var form = paymentService.CreateForm(order);
 
+            var webContractorService = webContractorServices.SingleOrDefault(service => service.UniqueCode == uniqueCode);
+
+            if (webContractorService != null)
+                return Redirect(webContractorService.GetUri);
+
             return View("PaymentStep", form);
         }
 
@@ -275,6 +284,12 @@ namespace BookStore.Web.Controllers
             }
 
             return View("PaymentStep", form);
+        }
+
+        public IActionResult Finish()
+        {
+            HttpContext.Session.RemoveCart();
+            return View();
         }
     }
 }
