@@ -1,0 +1,21 @@
+﻿@model DeliveryModel
+@{
+    ViewData["Title"] = "Спосіб оплати";
+}
+
+<h1>Спосіб оплати</h1>
+
+<form action="@Url.Action("StartPayment")" method="post">
+    <input type="hidden" name="id" value="@Model.OrderId" />
+    <div class="form-group">
+        <label for="uniqueCode">Спосіб оплати</label>
+        <select class="form-control" name="uniqueCode">
+            @foreach (var Method in Model.Methods)
+            {
+                <option value="@Method.Key">@Method.Value</option>
+            }
+        </select>
+    </div>
+    <button type="submit" class="btn btn-success">Далі</button>
+</form>
+

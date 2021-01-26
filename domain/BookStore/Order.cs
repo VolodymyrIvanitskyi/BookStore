@@ -11,7 +11,10 @@ namespace BookStore
 
         private List<OrderItem> items;
 
-        public string cellPhone { get; set; }
+        public string CellPhone { get; set; }
+
+        public OrderDelivery Delivery { get; set; }
+        public OrderPayment Payment { get; set; }
         public IReadOnlyCollection<OrderItem> Items
         {
             get { return items; }
@@ -19,7 +22,7 @@ namespace BookStore
 
         public int TotalCount => items.Sum(item => item.Count);
         
-        public decimal TotalPrice => items.Sum(item => item.Price * item.Count);
+        public decimal TotalPrice => items.Sum(item => item.Price * item.Count + (Delivery?.Amount ?? 0m));
         
         public Order(int id, IEnumerable<OrderItem> items)
         {

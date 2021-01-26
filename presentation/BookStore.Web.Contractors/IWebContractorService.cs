@@ -1,0 +1,11 @@
+﻿using System;
+
+namespace BookStore.Web.Contractors
+{
+    public interface IWebContractorService
+    {
+        string UniqueCode { get; }
+
+        string GetUri { get; }
+    }
+}
