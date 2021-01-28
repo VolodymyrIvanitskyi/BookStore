@@ -9,34 +9,26 @@ namespace BookStore
     {
         public int Id { get; }
 
-        private List<OrderItem> items;
-
         public string CellPhone { get; set; }
 
         public OrderDelivery Delivery { get; set; }
         public OrderPayment Payment { get; set; }
-        public IReadOnlyCollection<OrderItem> Items
-        {
-            get { return items; }
-        }
-
-        public int TotalCount => items.Sum(item => item.Count);
+        public OrderItemCollection Items { get; }
         
-        public decimal TotalPrice => items.Sum(item => item.Price * item.Count + (Delivery?.Amount ?? 0m));
+
+        public int TotalCount => Items.Sum(item => item.Count);
+        
+        public decimal TotalPrice => Items.Sum(item => item.Price * item.Count + (Delivery?.Amount ?? 0m));
         
         public Order(int id, IEnumerable<OrderItem> items)
         {
-            if(items == null)
-            {
-                throw new ArgumentNullException(nameof(items));
-            }
             Id = id;
-            this.items = new List<OrderItem>(items);
+            Items = new OrderItemCollection(items);
         }
 
-        public OrderItem GetItem(int bookId)
+        /*public OrderItem GetItem(int bookId)
         {
-            int index = items.FindIndex(item => item.BookId == bookId);
+            int index = Items.FindIndex(item => item.BookId == bookId);
 
             if (index == -1)
                 ThrowBookException("Book not found",bookId);
@@ -71,7 +63,7 @@ namespace BookStore
                 ThrowBookException("Cart does not contain an item", bookId);
 
             items.RemoveAt(index);
-        }
+        }*/
 
         private void ThrowBookException(string message, int bookId)
         {
