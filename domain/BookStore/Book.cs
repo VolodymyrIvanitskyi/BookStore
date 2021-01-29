@@ -21,7 +21,7 @@ namespace BookStore
         public string Description { get; }
         public decimal Price { get; }
     
-        internal static bool IsIsbn(string query)
+        public static bool IsIsbn(string query)
         {
             if (query == null)
                 return false;
