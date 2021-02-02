@@ -48,8 +48,7 @@
     Введіть номер і нітисніть <em>Відправити код</em>. На ваш номер буде відправлено <b>код підтвердження</b>.
 </p>
 
-<form action="@Url.Action("SendConfirmationCode")" method="post">
-    <input type="hidden" name="id" value="@Model.Id" />
+<form action="@Url.Action(nameof(OrderController.SendConfirmationCode))" method="post">
     <div class="form-group">
         <label for="cellPhone">Мобильный телефон</label>
         <input type="text" class="form-control" name="cellPhone" placeholder="+380987654321" value="+380987654321" />

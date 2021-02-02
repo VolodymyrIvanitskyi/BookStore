@@ -1,9 +1,8 @@
-﻿using BookStore.Web.Models;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Text;
 
-namespace BookStore.Web
+namespace BookStore.Web.App
 {
     public static class SessionExtensions
     {

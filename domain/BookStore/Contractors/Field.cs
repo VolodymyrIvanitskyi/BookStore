@@ -20,15 +20,6 @@ namespace BookStore.Contractors
         }
     }
 
-    public class HiddenField : Field
-    {
-        public HiddenField(string label, string name, string value)
-            : base(label, name, value)
-        {
-
-        }
-    }
-
     public class SelectionField : Field
     {
         public IReadOnlyDictionary<string,string> Items { get; } //При виборі наприклад міста доставки це пара значень, наприклад Місто і id яке відповідає йому
