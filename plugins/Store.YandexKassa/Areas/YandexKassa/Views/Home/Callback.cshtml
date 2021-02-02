@@ -1,11 +1,20 @@
-﻿@{
+﻿@using Store.YandexKassa.Areas.YandexKassa.Models;
+@model ExampleModel
+
+@{
     ViewData["Title"] = "Замовлення оплачено";
 }
 
-    <h1>Замовлення оплачено</h1>
+<h1>Замовлення оплачено</h1>
 
 <p>
-    <a href="@Url.Action("Finish", "Order")">Повернутися в магазин</a>
+    Замовлення оплачено. Щоб завершити оформлення, натисність кнопку <em>Далі</em>.
 </p>
 
+<form action="@Model.ReturnUri" method="post">
+    <input type="hidden" name="serviceName" value="YandexKassa" />
+    <input type="hidden" name="step" value="1" />
+    <input type="hidden" name="values[orderId]" value="@Model.OrderId" />
+    <button type="submit" class="btn btn-success">Далі</button>
+</form>
 

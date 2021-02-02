@@ -7,7 +7,7 @@ using Xunit;
 namespace BookStore.Tests
 {
     public class BookServiceTests
-    {
+    {/*
         [Fact]
         public void GetByQuery_WithIsbn_CallsGetByQuery()
         {
@@ -43,6 +43,6 @@ namespace BookStore.Tests
 
             Assert.Collection(actual, book => Assert.Equal(2, book.Id));
 
-        }
+        }*/
     }
 }

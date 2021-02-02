@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using BookStore.Contractors;
 using BookStore.Memory;
 using BookStore.Messages;
+using BookStore.Web.App;
 using BookStore.Web.Contractors;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -29,6 +30,7 @@ namespace BookStore.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            services.AddHttpContextAccessor();
             services.AddDistributedMemoryCache();
             services.AddSession(options =>
             {
@@ -44,6 +46,7 @@ namespace BookStore.Web
             services.AddSingleton<IPaymentService, YandexKassaPaymentService>();
             services.AddSingleton<IWebContractorService, YandexKassaPaymentService>();
             services.AddSingleton<BookService>();
+            services.AddSingleton<OrderService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -71,12 +74,16 @@ namespace BookStore.Web
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
+                    name:"areas",
+                    pattern:"{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
+                endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
-                endpoints.MapAreaControllerRoute(
+                /*endpoints.MapAreaControllerRoute(
                     name: "yandex.kassa",
                     areaName: "YandexKassa",
-                    pattern: "YandexKassa/{controller=Home}/{action=Index}/{id?}");
+                    pattern: "YandexKassa/{controller=Home}/{action=Index}/{id?}");*/
             });
         }
     }
